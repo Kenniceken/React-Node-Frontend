@@ -1,0 +1,236 @@
+Deploying Node JS API to Digital Ocean
+We have build a Node JS API along with React JS frontend client. It is time for us to deploy our app so that it can be accessed by the whole world.
+
+We will do this in 2 steps. First we will deploy Node JS API to a cloud server (Digital Ocean). Digital Ocean is the cheapest and fastest cloud service provider and considered best for production apps.
+
+Then we will deploy our React JS Web App as a SPA (single page application) to Digital Ocean(using same droplet).
+
+Our API will be available in '/api' and our react app will available on '/'
+
+
+
+Deploying Node JS API to Digital Ocean
+
+
+So the first step here is to signup with Digital Ocean. It is a paid service. The minimum monthly cost would be $5.
+
+Use the link below to signup. This link will give you between $10 - $100 depending on the running offer by Digital Ocean.
+
+
+
+Sign Up with Digital Ocean
+
+
+These are the steps (rough steps...) we will go through to deploy our API. Don't worry, I will cover each step in the following video lecture. These steps are here for your reference. You can always come back to it and get a rough idea if needed.
+
+
+
+STEPS:
+
+These steps are shown in the next video lecture.
+
+/**
+ * DEPLOY NODE JS API
+ */
+ 
+// signup using this URL - https://m.do.co/c/90857e82d426
+// check email
+ssh root@178.128.75.31
+// 55ec9e83e14eb5fc032febbbaa - password from email
+// re-paste as UNIX password
+// new password
+ 
+// add new user
+adduser fsadmin
+ 
+// login as new/admin user
+usermod -aG sudo fsadmin
+// add admin to sudo users list
+sudo su fsadmin
+ 
+// try exit and login as fsadmin to see if works
+// only if works, remove root user login authority for security
+ 
+// remove root user rights
+// hit i to edit file
+sudo vim /etc/ssh/sshd_config
+// change 'PermitRootLogin yes' to the following:
+PermitRootLogin no
+// to save and exit press ESC in your keyboard and type :wq Then hit Enter
+// ESC :wq
+ 
+// to make sure the changes are applied
+sudo service ssh restart
+// now if you try login with ssh root@178.128.75.31 you cant!!!
+ 
+// push project to bitbucket
+// create .gitignore and add the following
+/node_modules
+.env
+ 
+// push your project to GitHub/bitbucket
+// tutorial -> https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/
+ 
+// install node and npm in digital ocean
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo apt-get install nginx
+
+cd /etc/nginx/sites-available
+
+sudo vim default
+
+
+nano nodesource_setup.sh
+sudo bash nodesource_setup.sh
+
+ 
+// clone repo from github or bitbucket
+// clone into project folder - url followed by the name 'project'
+ 
+git clone https://kaloraat@bitbucket.org/kaloraat/fs.git project
+ls 
+cd project
+sudo apt-get install nginx
+ 
+// go to root directory
+cd
+cd /etc/nginx/sites-available
+ls
+sudo vim default
+ 
+// hit i to edit
+// replace location / codeblock with the following code:
+      location /api {
+        proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+        location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+ sudo nginx -t
+
+ 
+// make sure no errors
+sudo nginx -t
+ 
+// restart Nginx after making those changes
+sudo systemctl restart nginx
+cd
+ 
+// get into project. create .env and add env variables
+git clone https://github.com/Kenniceken/React-Node-API.git
+cd project
+sudo touch .env
+sudo vim .env
+ 
+// copy paste your env variables for production use
+NODE_ENV=production
+MONGO_URI=mongodb://kaloraat:dhungel@ds243054.mlab.com:57054/nodeapi
+PORT=8080
+JWT_SECRET=KHKDLSAHFLK092859340JKHFDSLKHJ
+CLIENT_URL=http://localhost:3000
+ 
+// run npm install inside project and also inside react-front(later)
+cd
+cd project
+npm install
+sudo npm install pm2 -g
+pm2 start app.js
+ 
+// now you api is live all time
+ 
+// sometime you might want to restart pm2
+ 
+pm2 restart all
+ 
+ 
+/**
+ * USE MONGODB - DIGITAL OCEAN
+ */
+ 
+// https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-18-04
+ 
+ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+ 
+sudo apt update
+ 
+sudo apt install -y mongodb
+ 
+// you should see the active (running) status printed in console
+sudo systemctl status mongodb
+ 
+ 
+// show databases 
+mongo
+show dbs
+ 
+use nodeapi
+// update .env
+//figitalocean
+mongodb://127.0.0.1:27017/nodeapi
+ 
+pm2 restart app.js
+pm2 startup systemd
+pm2 start npm -- start
+// perfect!!!
+// The API is now live!
+
+=========================
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+
+# SSL configuration
+        #
+        # listen 443 ssl default_server;
+        # listen [::]:443 ssl default_server;
+        #
+        # Note: You should disable gzip for SSL traffic.
+        # See: https://bugs.debian.org/773332
+        #
+        # Read up on ssl_ciphers to ensure a secure configuration.
+        # See: https://bugs.debian.org/765782
+        #
+        # Self signed certs generated by the ssl-cert package
+        # Don't use them in a production server!
+        #
+        # include snippets/snakeoil.conf;
+
+
+root /var/www/html;
+
+//mongodb
+MONGO_URI = mongodb+srv://meanUser:pNyWknCpiYq1DIqP@meanstackapp-s8q5t.mongodb.net/nodeapi
+PORT = 8080
+JWT_SECRET = MJATYROLGTSQ014785164923MBARQZIFTYU
+CLIENT_URL = http://localhost:3000
+
+//frontend .env
+REACT_APP_API_URL = http://165.227.95.210/api
+
+
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+
+
+// Deploy to firebase
+1. firebase login:ci --interactive
+2. firebase init
+3. choose the build folder name
+4. configure as a single page app - y
+5. File build/index.htmk already exists. overwrite? n
+6. firebase use appname
+7. firebase deploy

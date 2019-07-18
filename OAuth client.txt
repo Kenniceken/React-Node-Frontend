@@ -1,0 +1,67 @@
+
+OAuth client
+client ID: ****************************************************************
+
+client secret: *************************************************************
+
+usermod -aG sudo username
+su - username
+sudo whoami
+sudo service ssh restart
+
+https://cloud.digitalocean.com/login
+LondonOgui!@#1
+=====
+Droplet Name: reactnode
+IP Address: 165.227.95.210
+Username: root
+Password: 9ff63f18dd99829685c0ed35c4
+
+======
+shell login
+ssh root@165.227.95.210
+amaozalla123
+======
+ssh ken@165.227.95.210
+amaozalla123
+
+=====
+:wq or :x to save and exit vim
+
+git init
+git remote add origin <link>
+echo "node_modules/" > .gitignore
+git remote -v
+git add .
+git commit -m "first init"
+git push origin master
+
+remove current git repo
+ rm -rf React-Node-Frontend
+
+http://165.227.95.210/
+
+
+$ git init
+$ git remote add <put_your _github_repo_here>
+$ echo "node_modules/" > .gitignore
+$ git add .
+$ git commit -m "initial commit"
+$ git push origin master
+
+ssh-keygen -R 165.227.95.210
+
+
+//List all the ssh running in your machine
+ls -al ~/.ssh .
+
+sudo systemctl restart ssh
+
+MONGO_URI = mongodb+srv://meanUser:pNyWknCpiYq1DIqP@meanstackapp-s8q5t.mongodb.net/nodeapi
+PORT = 8080
+JWT_SECRET = MJATYROLGTSQ014785164923MBARQZIFTYU
+CLIENT_URL = https://reactnodefrontend.web.app
+
+
+http://www.reactnode.online/api
+https://reactnodefrontend.firebaseapp.com
