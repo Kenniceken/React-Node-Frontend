@@ -77,7 +77,7 @@ class SocialLogin extends Component {
 				<div className="row">
 					<div className="col-md-12 float-left">
 						<GoogleLogin
-							clientId="816153809520-cgkoi9hpghta0i0hot6uj9lp98nu2fjn.apps.googleusercontent.com"
+							clientId="**********************"
 							buttonText="Login with Gmail"
 							onSuccess={this.responseGoogle}
 							onFailure={this.responseGoogle}
